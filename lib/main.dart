@@ -14,88 +14,36 @@ class TatchiFashionApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'تاتشي فاشن',
+      title: 'Tatchi Fashion',
       theme: ThemeData(
         primarySwatch: Colors.pink,
         fontFamily: 'Cairo',
-        scaffoldBackgroundColor: const Color(0xFFF8F9FA),
       ),
-      home: const HomeScreen(),
+      home: const MainStoreScreen(),
     );
   }
 }
 
-// ----------------------------------------------------
-// الشاشة الرئيسية (Home Screen)
-// ----------------------------------------------------
-class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+class MainStoreScreen extends StatefulWidget {
+  const MainStoreScreen({super.key});
 
   @override
-  State<HomeScreen> createState() => _HomeScreenState();
+  State<MainStoreScreen> createState() => _MainStoreScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
-  String selectedCurrency = 'YER'; // 'YER' (ريال يمني) أو 'SAR' (ريال سعودي)
-
-  List<Map<String, dynamic>> products = [
-    {
-      'title': 'فستان نسائي راقي للمناسبات',
-      'priceYER': 15000,
-      'priceSAR': 220,
-      'category': 'نسائي',
-      'isNew': true,
-      'imageFile': null,
-    },
-    {
-      'title': 'طقم أطفال بناتي صيفي',
-      'priceYER': 8500,
-      'priceSAR': 120,
-      'category': 'أطفال',
-      'isNew': false,
-      'imageFile': null,
-    },
-  ];
+class _MainStoreScreenState extends State<MainStoreScreen> {
+  String selectedCurrency = 'YER';
+  List<Map<String, dynamic>> products = [];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 1,
-        title: const Text(
-          'تاتشي فاشن',
-          style: TextStyle(
-            color: Colors.black,
-            fontWeight: FontWeight.bold,
-            fontSize: 20,
-          ),
-        ),
-        centerTitle: true,
+        title: const Text('تاتشي فاشن 🌟'),
+        backgroundColor: Colors.pink,
         actions: [
-          // مفتاح التحويل بين العملتين
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 6.0, vertical: 10.0),
-            child: ToggleButtons(
-              isSelected: [selectedCurrency == 'YER', selectedCurrency == 'SAR'],
-              onPressed: (index) {
-                setState(() {
-                  selectedCurrency = index == 0 ? 'YER' : 'SAR';
-                });
-              },
-              borderRadius: BorderRadius.circular(8),
-              selectedColor: Colors.white,
-              fillColor: Colors.pink,
-              constraints: const BoxConstraints(minWidth: 40, minHeight: 30),
-              children: const [
-                Text('ر.ي', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold)),
-                Text('ر.س', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold)),
-              ],
-            ),
-          ),
-          // زر لوحة التحكم لإضافة عرض من الاستوديو
           IconButton(
-            icon: const Icon(Icons.add_a_photo, color: Colors.pink),
+            icon: const Icon(Icons.add_box),
             onPressed: () async {
               final newProduct = await Navigator.push(
                 context,
@@ -103,9 +51,22 @@ class _HomeScreenState extends State<HomeScreen> {
               );
               if (newProduct != null) {
                 setState(() {
-                  products.insert(0, newProduct);
+                  products.add(newProduct);
                 });
               }
+            },
+          ),
+          DropdownButton<String>(
+            value: selectedCurrency,
+            dropdownColor: Colors.pink,
+            icon: const Icon(Icons.currency_exchange, color: Colors.white),
+            underline: Container(),
+            items: const [
+              DropdownMenuItem(value: 'YER', child: Text('ر.ي', style: TextStyle(color: Colors.white))),
+              DropdownMenuItem(value: 'SAR', child: Text('ر.س', style: TextStyle(color: Colors.white))),
+            ],
+            onChanged: (val) {
+              if (val != null) setState(() => selectedCurrency = val);
             },
           ),
         ],
@@ -114,37 +75,25 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // بانر العروض
             Container(
-              margin: const EdgeInsets.all(12),
-              height: 140,
               width: double.infinity,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(15),
-                gradient: const LinearGradient(
-                  colors: [Colors.pinkAccent, Colors.purpleAccent],
-                ),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: const [
-                    Text(
-                      'تاتشي فاشن 🌟',
-                      style: TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.bold),
-                    ),
-                    SizedBox(height: 5),
-                    Text(
-                      'أحدث تشكيلات الأزياء النسائية والأطفال',
-                      style: TextStyle(color: Colors.white70, fontSize: 14),
-                    ),
-                  ],
-                ),
+              padding: const EdgeInsets.all(20),
+              color: Colors.pink.shade400,
+              child: const Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'تاتشي فاشن 🌟',
+                    style: TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.bold),
+                  ),
+                  SizedBox(height: 5),
+                  Text(
+                    'أحدث تشكيلات الأزياء النسائية والأطفال',
+                    style: TextStyle(color: Colors.white70, fontSize: 14),
+                  ),
+                ],
               ),
             ),
-
             const Padding(
               padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
               child: Text(
@@ -152,8 +101,6 @@ class _HomeScreenState extends State<HomeScreen> {
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
             ),
-
-            // شبكة العروض
             GridView.builder(
               padding: const EdgeInsets.all(12),
               shrinkWrap: true,
@@ -392,7 +339,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
             width: double.infinity,
             child: ElevatedButton.icon(
               onPressed: showWhatsAppSelector,
-              icon: const Icon(Icons.whatsapp, color: Colors.white),
+              icon: const Icon(Icons.chat, color: Colors.white),
               label: const Text('حجز مباشر عبر الواتساب', style: TextStyle(fontSize: 16, color: Colors.white, fontWeight: FontWeight.bold)),
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.green,
@@ -518,4 +465,3 @@ class _AddProductScreenState extends State<AddProductScreen> {
     );
   }
 }
-
